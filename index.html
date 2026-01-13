@@ -1,33 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TypeMaster Pro | Typing Tutor</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeMaster Pro</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <!-- LOGIN -->
 <div class="container" id="loginBox">
   <h1>TypeMaster Pro</h1>
-  <input type="text" id="username" placeholder="Enter your name" />
+  <input type="text" id="username" placeholder="Enter your name">
   <button id="startBtn">Start Typing</button>
 </div>
 
-<!-- TYPING AREA -->
+<!-- TYPING -->
 <div class="container hidden" id="typingBox">
-
   <div class="header">
-    <div id="levelIndicator">Level 1 → Round 1</div>
+    <div id="levelIndicator">Alphabet → Round 1</div>
     <div id="timer">60s</div>
-  </div>
-
-  <!-- Hand Guide -->
-  <div id="handGuide">
-    <img src="assets/hand.png" alt="Hand Guide" id="handImage">
-    <div class="finger" id="finger-left-index"></div>
-    <div class="finger" id="finger-right-index"></div>
   </div>
 
   <div class="text-display" id="textDisplay"></div>
@@ -40,7 +32,7 @@
     <div>Strength: <span id="strength">0%</span></div>
   </div>
 
-  <!-- Keyboard -->
+  <!-- KEYBOARD -->
   <div class="keyboard">
     <div class="row">
       <div class="key" data-key="q">Q</div><div class="key" data-key="w">W</div>
@@ -64,18 +56,19 @@
     </div>
   </div>
 
-  <canvas id="celebrationCanvas"></canvas>
-  <button id="nextRoundBtn" class="hidden">Next Round</button>
+  <button id="nextRoundBtn" class="hidden">Next</button>
 </div>
 
 <!-- END -->
 <div class="container hidden" id="endBox">
-  <h2>Great job, <span id="userNameDisplay"></span> 🎉</h2>
-  <p>Final Results</p>
-  <div>WPM: <span id="finalWpm">0</span></div>
-  <div>Accuracy: <span id="finalAccuracy">0%</span></div>
+  <h2>Well done <span id="userNameDisplay"></span> 🎉</h2>
+  <p>Final WPM: <span id="finalWpm"></span></p>
+  <p>Accuracy: <span id="finalAccuracy"></span></p>
   <button id="restartBtn">Restart</button>
 </div>
+
+<audio id="keySound" src="https://assets.mixkit.co/sfx/preview/mixkit-keyboard-click-1126.mp3"></audio>
+<audio id="errorSound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
 
 <script src="script.js"></script>
 </body>

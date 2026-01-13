@@ -1,52 +1,66 @@
-alert("JS Connected Successfully");
 let time = 60;
-let timer;
+let timer = null;
 let started = false;
 
-const text = document.getElementById("text").innerText;
-function login() 
-    const name = document.getElementById("username").value;
-    if (name === "") {
-      alter("Please enter your name");
-      return;
-    }
-    localStorage.setItem("user", name);
-    document.getElementById("user").innerText = name;
-    document.getElementById("loginBox").classList.add("hidden");
-    document.getElementById("typingBox").classList.remove("hidden");
+const originalText =
+  "Practice typing to improve your speed and accuracy. Keep your eyes on the screen.";
+
+function login() {
+  const name = document.getElementById("username").value.trim();
+
+  if (name === "") {
+    alert("Please enter your name");
+    return;
+  }
+
+  localStorage.setItem("typemasterUser", name);
+
+  document.getElementById("user").innerText = name;
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("typingBox").classList.remove("hidden");
 }
 
 function startTyping() {
-    if (!started) {
-        started = true;
-        timer = setInterval(updateTime, 1000);
+  if (!started) {
+    started = true;
+    timer = setInterval(updateTime, 1000);
+  }
+
+  const input = document.getElementById("input").value;
+  const wordsTyped = input.trim().split(/\s+/).length;
+  const timeSpent = 60 - time;
+
+  const wpm =
+    timeSpent > 0 ? Math.round((wordsTyped / timeSpent) * 60) : 0;
+
+  document.getElementById("wpm").innerText = wpm;
+
+  let correctChars = 0;
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] === originalText[i]) {
+      correctChars++;
     }
+  }
 
-    const input = document.getElementById("input").value;
-    const wordsTyped = input.trim().split(/\s+/).length;
-    const wpm = Math.round((wordsTyped / (60 - time + 1)) * 60);
-    document.getElementById("wpm").innerText = isNaN(wpm) ? 0 : wpm;
+  const accuracy =
+    input.length > 0
+      ? Math.round((correctChars / input.length) * 100)
+      : 100;
 
-    let correctChars = 0;
-    for (let i = 0; i < input.length; i++) {
-        if (input[i] === text[i]) correctChars++;
-    }
-
-    let accuracy = Math.round((correctChars / input.length) * 100);
-    document.getElementById("accuracy").innerText = isNaN(accuracy) ? 100 : accuracy;
+  document.getElementById("accuracy").innerText = accuracy;
 }
 
 function updateTime() {
-    time--;
-    document.getElementById("time").innerText = time;
+  time--;
+  document.getElementById("time").innerText = time;
 
-    if (time === 0) {
-        clearInterval(timer);
-        document.getElementById("input").disabled = true;
-        alert("Time up!");
-    }
+  if (time === 0) {
+    clearInterval(timer);
+    document.getElementById("input").disabled = true;
+    alert("Time up! Test completed.");
+  }
 }
 
 function resetTest() {
-    location.reload();
+  location.reload();
 }

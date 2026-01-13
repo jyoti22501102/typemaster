@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TypeMaster | Typing Tutor</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container" id="loginBox">
+    <h2>Welcome to TypeMaster</h2>
+    <input type="text" id="username" placeholder="Enter your name">
+    <button onclick="login()">Start Typing</button>
+</div>
+
+<div class="container hidden" id="typingBox">
+    <h2>Hello, <span id="user"></span> 👋</h2>
+
+    <p id="text">
+        Practice typing to improve your speed and accuracy. Keep your eyes on the screen.
+    </p>
+
+    <textarea id="input" placeholder="Start typing here..." oninput="startTyping()"></textarea>
+
+    <div class="stats">
+        <span>Time: <b id="time">60</b>s</span>
+        <span>WPM: <b id="wpm">0</b></span>
+        <span>Accuracy: <b id="accuracy">100</b>%</span>
+    </div>
+
+    <button onclick="resetTest()">Restart</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

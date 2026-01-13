@@ -7,28 +7,38 @@
 </head>
 <body>
 
+<!-- LOGIN BOX -->
 <div class="container" id="loginBox">
     <h2>Welcome to TypeMaster</h2>
     <input type="text" id="username" placeholder="Enter your name">
     <button onclick="login()">Start Typing</button>
 </div>
 
+<!-- TYPING BOX -->
 <div class="container hidden" id="typingBox">
+
     <h2>Hello, <span id="user"></span> 👋</h2>
 
-    <p id="text">
-        Practice typing to improve your speed and accuracy. Keep your eyes on the screen.
-    </p>
+    <!-- LEVEL INFO -->
+    <h3 id="levelInfo">Level 1</h3>
 
-    <textarea id="input" placeholder="Start typing here..." oninput="startTyping()"></textarea>
+    <!-- TEXT TO TYPE -->
+    <p id="textToType"></p>
 
+    <!-- INPUT AREA -->
+    <textarea
+        id="typingArea"
+        placeholder="Start typing here..."
+    ></textarea>
+
+    <!-- STATS -->
     <div class="stats">
-        <span>Time: <b id="time">60</b>s</span>
+        <span>Time: <b id="time">45</b>s</span>
         <span>WPM: <b id="wpm">0</b></span>
         <span>Accuracy: <b id="accuracy">100</b>%</span>
     </div>
 
-    <button onclick="resetTest()">Restart</button>
+    <button onclick="restart()">Restart</button>
 </div>
 
 <script src="script.js"></script>

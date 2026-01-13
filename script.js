@@ -1,3 +1,18 @@
+function login() {
+  const name = document.getElementById("username").value;
+
+  if (name.trim() === "") {
+    alert("Please enter your name");
+    return;
+  }
+
+  document.getElementById("user").innerText = name;
+  document.getElementById("loginBox").classList.add("hidden");
+  document.getElementById("typingBox").classList.remove("hidden");
+
+  restart();
+}
+
 /* ================================
    TYPING TUTOR – ALL LOGIC HERE
    Easy to edit | Beginner friendly
@@ -132,3 +147,4 @@ function restart() {
 // -------- START APP --------
 loadRound();
 startTimer();
+

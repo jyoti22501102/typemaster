@@ -9,123 +9,127 @@ const levelIndicator = document.getElementById("levelIndicator");
 const timerDisplay = document.getElementById("timer");
 const wpmDisplay = document.getElementById("wpm");
 const accuracyDisplay = document.getElementById("accuracy");
+const strengthDisplay = document.getElementById("strength");
 const nextRoundBtn = document.getElementById("nextRoundBtn");
 const userNameDisplay = document.getElementById("userNameDisplay");
 const finalWpm = document.getElementById("finalWpm");
 const finalAccuracy = document.getElementById("finalAccuracy");
 const restartBtn = document.getElementById("restartBtn");
+const canvas = document.getElementById("celebrationCanvas");
+const ctx = canvas.getContext("2d");
 
-// Typing levels and rounds
+// Levels and rounds
 const levels = [
-    { name: "Alphabet", rounds: ["a b c d e f g h i j", "k l m n o p q r s t", "u v w x y z"] },
-    { name: "Words", rounds: ["cat dog fish bird", "apple banana orange grape", "car bus train plane"] },
-    { name: "Sentences", rounds: ["Typing is fun.", "Practice makes perfect.", "Always keep learning new things."] },
-    { name: "Paragraphs", rounds: ["This is a paragraph. It contains multiple sentences to practice typing and improve speed and accuracy."] },
-    { name: "Stories", rounds: ["Once upon a time, in a land far away, there lived a curious little fox who loved adventures."] }
+    { name:"Alphabet", rounds:["a b c d e f g h i j","k l m n o p q r s t","u v w x y z"] },
+    { name:"Words", rounds:["cat dog fish bird","apple banana orange grape","car bus train plane"] },
+    { name:"Sentences", rounds:["Typing is fun.","Practice makes perfect.","Always keep learning new things."] },
+    { name:"Paragraphs", rounds:["This is a paragraph. It contains multiple sentences to practice typing and improve speed and accuracy."] },
+    { name:"Stories", rounds:["Once upon a time, in a land far away, there lived a curious little fox who loved adventures."] }
 ];
 
-let currentLevel = 0;
-let currentRound = 0;
-let totalTyped = 0;
-let correctTyped = 0;
-let timer;
-let timeLeft = 60;
+let currentLevel=0, currentRound=0, totalTyped=0, correctTyped=0, timer, timeLeft=60;
 
-startBtn.addEventListener("click", () => {
-    if (usernameInput.value.trim() === "") return alert("Enter your name!");
+// Resize canvas
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
+
+// Simple balloon effect
+function celebrate() {
+    for(let i=0;i<30;i++){
+        let x=Math.random()*canvas.width;
+        let y=canvas.height+Math.random()*100;
+        let size=5+Math.random()*15;
+        let speed=1+Math.random()*3;
+        ctx.beginPath();
+        ctx.fillStyle=["#FF4C4C","#4CFF91","#4C8CFF","#FFC44C"][Math.floor(Math.random()*4)];
+        ctx.arc(x,y,size,0,2*Math.PI);
+        ctx.fill();
+    }
+    setTimeout(()=>{ctx.clearRect(0,0,canvas.width,canvas.height)},800);
+}
+
+startBtn.addEventListener("click",()=>{
+    if(usernameInput.value.trim()==="") return alert("Enter your name!");
     loginBox.classList.add("hidden");
     typingBox.classList.remove("hidden");
-    userNameDisplay.textContent = usernameInput.value;
+    userNameDisplay.textContent=usernameInput.value;
     loadRound();
 });
 
-function loadRound() {
-    const roundText = levels[currentLevel].rounds[currentRound];
-    textDisplay.innerHTML = "";
-    roundText.split("").forEach(char => {
-        const span = document.createElement("span");
-        span.textContent = char;
+function loadRound(){
+    const roundText=levels[currentLevel].rounds[currentRound];
+    textDisplay.innerHTML="";
+    roundText.split("").forEach(char=>{
+        const span=document.createElement("span");
+        span.textContent=char;
         textDisplay.appendChild(span);
     });
-    typingArea.value = "";
-    typingArea.disabled = false;
+    typingArea.value="";
+    typingArea.disabled=false;
     typingArea.focus();
-    levelIndicator.textContent = `${levels[currentLevel].name} → Round ${currentRound + 1}`;
+    levelIndicator.textContent=`${levels[currentLevel].name} → Round ${currentRound+1}`;
     nextRoundBtn.classList.add("hidden");
-    timeLeft = 60;
-    timerDisplay.textContent = `${timeLeft}s`;
-    totalTyped = 0;
-    correctTyped = 0;
-    wpmDisplay.textContent = 0;
-    accuracyDisplay.textContent = "0%";
+    timeLeft=60;
+    timerDisplay.textContent=`${timeLeft}s`;
+    totalTyped=0;
+    correctTyped=0;
+    wpmDisplay.textContent=0;
+    accuracyDisplay.textContent="0%";
+    strengthDisplay.textContent="0%";
     clearInterval(timer);
-    timer = setInterval(updateTimer, 1000);
+    timer=setInterval(updateTimer,1000);
 }
 
-typingArea.addEventListener("input", () => {
-    const roundText = levels[currentLevel].rounds[currentRound];
-    const typed = typingArea.value;
-    totalTyped = typed.length;
-    correctTyped = 0;
-    const spans = textDisplay.querySelectorAll("span");
-
-    spans.forEach((span, index) => {
-        const char = typed[index];
-        if (char == null) {
-            span.classList.remove("correct", "wrong");
-        } else if (char === span.textContent) {
-            span.classList.add("correct");
-            span.classList.remove("wrong");
-            correctTyped++;
-        } else {
-            span.classList.add("wrong");
-            span.classList.remove("correct");
-        }
+typingArea.addEventListener("input",()=>{
+    const roundText=levels[currentLevel].rounds[currentRound];
+    const typed=typingArea.value;
+    totalTyped=typed.length;
+    correctTyped=0;
+    const spans=textDisplay.querySelectorAll("span");
+    spans.forEach((span,index)=>{
+        const char=typed[index];
+        if(char==null){span.classList.remove("correct","wrong");}
+        else if(char===span.textContent){span.classList.add("correct"); span.classList.remove("wrong"); correctTyped++;}
+        else{span.classList.add("wrong"); span.classList.remove("correct");}
     });
+    const wpm=Math.round((correctTyped/5)/((60-timeLeft)/60)||0);
+    const accuracy=totalTyped===0?0:Math.round((correctTyped/totalTyped)*100);
+    wpmDisplay.textContent=wpm;
+    accuracyDisplay.textContent=`${accuracy}%`;
+    strengthDisplay.textContent=Math.round((wpm/60)*100)+'%'; // Example strength bar
 
-    const wpm = Math.round((correctTyped / 5) / ((60 - timeLeft) / 60) || 0);
-    const accuracy = totalTyped === 0 ? 0 : Math.round((correctTyped / totalTyped) * 100);
-    wpmDisplay.textContent = wpm;
-    accuracyDisplay.textContent = `${accuracy}%`;
-
-    // ✅ Auto-finish round if user types everything correctly
-    if (typed === roundText) {
+    // Auto-finish round
+    if(typed===roundText){
         clearInterval(timer);
-        typingArea.disabled = true;
+        typingArea.disabled=true;
         nextRoundBtn.classList.remove("hidden");
+        celebrate(); // Balloon effect
     }
 });
 
-function updateTimer() {
+function updateTimer(){
     timeLeft--;
-    timerDisplay.textContent = `${timeLeft}s`;
-    if (timeLeft <= 0) {
+    timerDisplay.textContent=`${timeLeft}s`;
+    if(timeLeft<=0){
         clearInterval(timer);
-        typingArea.disabled = true;
+        typingArea.disabled=true;
         nextRoundBtn.classList.remove("hidden");
+        celebrate();
     }
 }
 
-nextRoundBtn.addEventListener("click", () => {
-    if (currentRound < levels[currentLevel].rounds.length - 1) {
-        currentRound++;
-    } else if (currentLevel < levels.length - 1) {
-        currentLevel++;
-        currentRound = 0;
-    } else {
-        // End of all levels
-        typingBox.classList.add("hidden");
-        endBox.classList.remove("hidden");
-        finalWpm.textContent = wpmDisplay.textContent;
-        finalAccuracy.textContent = accuracyDisplay.textContent;
-        return;
-    }
+nextRoundBtn.addEventListener("click",()=>{
+    if(currentRound<levels[currentLevel].rounds.length-1){currentRound++;}
+    else if(currentLevel<levels.length-1){currentLevel++; currentRound=0;}
+    else{typingBox.classList.add("hidden"); endBox.classList.remove("hidden");
+         finalWpm.textContent=wpmDisplay.textContent;
+         finalAccuracy.textContent=accuracyDisplay.textContent;
+         return;}
     loadRound();
 });
 
-restartBtn.addEventListener("click", () => {
-    currentLevel = 0;
-    currentRound = 0;
+restartBtn.addEventListener("click",()=>{
+    currentLevel=0; currentRound=0;
     endBox.classList.add("hidden");
     loginBox.classList.remove("hidden");
 });

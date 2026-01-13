@@ -1,150 +1,124 @@
-function login() {
-  const name = document.getElementById("username").value;
+const loginBox = document.getElementById("loginBox");
+const typingBox = document.getElementById("typingBox");
+const endBox = document.getElementById("endBox");
+const usernameInput = document.getElementById("username");
+const startBtn = document.getElementById("startBtn");
+const textDisplay = document.getElementById("textDisplay");
+const typingArea = document.getElementById("typingArea");
+const levelIndicator = document.getElementById("levelIndicator");
+const timerDisplay = document.getElementById("timer");
+const wpmDisplay = document.getElementById("wpm");
+const accuracyDisplay = document.getElementById("accuracy");
+const nextRoundBtn = document.getElementById("nextRoundBtn");
+const userNameDisplay = document.getElementById("userNameDisplay");
+const finalWpm = document.getElementById("finalWpm");
+const finalAccuracy = document.getElementById("finalAccuracy");
+const restartBtn = document.getElementById("restartBtn");
 
-  if (name.trim() === "") {
-    alert("Please enter your name");
-    return;
-  }
-
-  document.getElementById("user").innerText = name;
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("typingBox").classList.remove("hidden");
-
-  restart();
-}
-
-/* ================================
-   TYPING TUTOR – ALL LOGIC HERE
-   Easy to edit | Beginner friendly
-================================ */
-
-// -------- LEVEL CONTENT --------
-
-// Level 1 – Alphabets (10 rounds)
-const level1 = [
-  "a a a a a",
-  "b b b b b",
-  "c c c c c",
-  "d d d d d",
-  "e e e e e",
-  "f f f f f",
-  "g g g g g",
-  "h h h h h",
-  "i i i i i",
-  "j j j j j"
+// Typing levels and rounds
+const levels = [
+    { name: "Alphabet", rounds: ["a b c d e f g h i j", "k l m n o p q r s t", "u v w x y z"] },
+    { name: "Words", rounds: ["cat dog fish bird", "apple banana orange grape", "car bus train plane"] },
+    { name: "Sentences", rounds: ["Typing is fun.", "Practice makes perfect.", "Always keep learning new things."] },
+    { name: "Paragraphs", rounds: ["This is a paragraph. It contains multiple sentences to practice typing and improve speed and accuracy."] },
+    { name: "Stories", rounds: ["Once upon a time, in a land far away, there lived a curious little fox who loved adventures."] }
 ];
-
-// Level 2 – Words
-const level2 = [
-  "cat dog pen",
-  "apple banana mango",
-  "computer keyboard mouse",
-  "javascript html css",
-  "practice makes perfect",
-  "learn to type fast",
-  "speed and accuracy",
-  "focus on the screen",
-  "keep your hands steady",
-  "typing improves skills"
-];
-
-// Level 3 – Sentences
-const level3 = [
-  "The sun rises in the east.",
-  "Typing is a useful skill.",
-  "Practice every day to improve.",
-  "Accuracy is more important than speed.",
-  "Keep your eyes on the screen.",
-  "Do not look at the keyboard.",
-  "Consistency brings success.",
-  "Technology improves productivity.",
-  "Learning never stops.",
-  "Hard work beats talent."
-];
-
-// Level 4 – Paragraphs
-const level4 = [
-  "Typing speed is an essential skill in the digital age. Regular practice improves accuracy.",
-  "Technology has changed the way we work and learn. Typing efficiently saves time.",
-  "Discipline and dedication help master any skill. Typing is no exception.",
-  "Focus on accuracy before increasing speed to become a better typist."
-];
-
-// Level 5 – Poems & Stories
-const level5 = [
-  "Twinkle twinkle little star how I wonder what you are.",
-  "Roses are red violets are blue typing is fun and learning too.",
-  "Once upon a time there lived a student who practiced typing daily."
-];
-
-// -------- LEVEL CONTROLLER --------
-
-const levels = [level1, level2, level3, level4, level5];
 
 let currentLevel = 0;
 let currentRound = 0;
-let timeLeft = 45;
+let totalTyped = 0;
+let correctTyped = 0;
 let timer;
+let timeLeft = 60;
 
-// -------- ELEMENTS --------
-
-const textToType = document.getElementById("textToType");
-const typingArea = document.getElementById("typingArea");
-const timeEl = document.getElementById("time");
-const levelInfo = document.getElementById("levelInfo");
-
-// -------- FUNCTIONS --------
+startBtn.addEventListener("click", () => {
+    if (usernameInput.value.trim() === "") return alert("Enter your name!");
+    loginBox.classList.add("hidden");
+    typingBox.classList.remove("hidden");
+    userNameDisplay.textContent = usernameInput.value;
+    loadRound();
+});
 
 function loadRound() {
-  textToType.innerText = levels[currentLevel][currentRound];
-  levelInfo.innerText = `Level ${currentLevel + 1} - Round ${currentRound + 1}`;
-  typingArea.value = "";
-  typingArea.focus();
+    const roundText = levels[currentLevel].rounds[currentRound];
+    textDisplay.innerHTML = "";
+    roundText.split("").forEach(char => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        textDisplay.appendChild(span);
+    });
+    typingArea.value = "";
+    typingArea.focus();
+    levelIndicator.textContent = `${levels[currentLevel].name} → Round ${currentRound + 1}`;
+    nextRoundBtn.classList.add("hidden");
+    timeLeft = 60;
+    timerDisplay.textContent = `${timeLeft}s`;
+    totalTyped = 0;
+    correctTyped = 0;
+    wpmDisplay.textContent = 0;
+    accuracyDisplay.textContent = "0%";
+    clearInterval(timer);
+    timer = setInterval(updateTimer, 1000);
 }
 
-function startTimer() {
-  clearInterval(timer);
-  timeLeft = 45;
-  timeEl.innerText = timeLeft;
+typingArea.addEventListener("input", () => {
+    const roundText = levels[currentLevel].rounds[currentRound];
+    const typed = typingArea.value;
+    totalTyped = typed.length;
+    correctTyped = 0;
+    const spans = textDisplay.querySelectorAll("span");
 
-  timer = setInterval(() => {
+    spans.forEach((span, index) => {
+        const char = typed[index];
+        if (char == null) {
+            span.classList.remove("correct", "wrong");
+        } else if (char === span.textContent) {
+            span.classList.add("correct");
+            span.classList.remove("wrong");
+            correctTyped++;
+        } else {
+            span.classList.add("wrong");
+            span.classList.remove("correct");
+        }
+    });
+
+    const wpm = Math.round((correctTyped / 5) / ((60 - timeLeft) / 60) || 0);
+    const accuracy = totalTyped === 0 ? 0 : Math.round((correctTyped / totalTyped) * 100);
+    wpmDisplay.textContent = wpm;
+    accuracyDisplay.textContent = `${accuracy}%`;
+});
+
+function updateTimer() {
     timeLeft--;
-    timeEl.innerText = timeLeft;
-
-    if (timeLeft === 0) {
-      nextRound();
+    timerDisplay.textContent = `${timeLeft}s`;
+    if (timeLeft <= 0) {
+        clearInterval(timer);
+        nextRoundBtn.classList.remove("hidden");
+        typingArea.disabled = true;
     }
-  }, 1000);
 }
 
-function nextRound() {
-  clearInterval(timer);
-  currentRound++;
-
-  if (currentRound >= levels[currentLevel].length) {
-    currentLevel++;
-    currentRound = 0;
-
-    if (currentLevel >= levels.length) {
-      alert("🎉 You completed all levels!");
-      currentLevel = 0;
+nextRoundBtn.addEventListener("click", () => {
+    typingArea.disabled = false;
+    if (currentRound < levels[currentLevel].rounds.length - 1) {
+        currentRound++;
+    } else if (currentLevel < levels.length - 1) {
+        currentLevel++;
+        currentRound = 0;
     } else {
-      alert("✅ Level Completed!");
+        // End of all levels
+        typingBox.classList.add("hidden");
+        endBox.classList.remove("hidden");
+        finalWpm.textContent = wpmDisplay.textContent;
+        finalAccuracy.textContent = accuracyDisplay.textContent;
+        return;
     }
-  }
+    loadRound();
+});
 
-  loadRound();
-  startTimer();
-}
-
-function restart() {
-  currentLevel = 0;
-  currentRound = 0;
-  loadRound();
-  startTimer();
-}
-
-// -------- START APP --------
-loadRound();
-startTimer();
-
+restartBtn.addEventListener("click", () => {
+    currentLevel = 0;
+    currentRound = 0;
+    endBox.classList.add("hidden");
+    loginBox.classList.remove("hidden");
+});

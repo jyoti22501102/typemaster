@@ -48,6 +48,7 @@ function loadRound() {
         textDisplay.appendChild(span);
     });
     typingArea.value = "";
+    typingArea.disabled = false;
     typingArea.focus();
     levelIndicator.textContent = `${levels[currentLevel].name} → Round ${currentRound + 1}`;
     nextRoundBtn.classList.add("hidden");
@@ -86,6 +87,13 @@ typingArea.addEventListener("input", () => {
     const accuracy = totalTyped === 0 ? 0 : Math.round((correctTyped / totalTyped) * 100);
     wpmDisplay.textContent = wpm;
     accuracyDisplay.textContent = `${accuracy}%`;
+
+    // ✅ Auto-finish round if user types everything correctly
+    if (typed === roundText) {
+        clearInterval(timer);
+        typingArea.disabled = true;
+        nextRoundBtn.classList.remove("hidden");
+    }
 });
 
 function updateTimer() {
@@ -93,13 +101,12 @@ function updateTimer() {
     timerDisplay.textContent = `${timeLeft}s`;
     if (timeLeft <= 0) {
         clearInterval(timer);
-        nextRoundBtn.classList.remove("hidden");
         typingArea.disabled = true;
+        nextRoundBtn.classList.remove("hidden");
     }
 }
 
 nextRoundBtn.addEventListener("click", () => {
-    typingArea.disabled = false;
     if (currentRound < levels[currentLevel].rounds.length - 1) {
         currentRound++;
     } else if (currentLevel < levels.length - 1) {

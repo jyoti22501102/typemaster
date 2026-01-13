@@ -1,135 +1,134 @@
-const loginBox = document.getElementById("loginBox");
-const typingBox = document.getElementById("typingBox");
-const endBox = document.getElementById("endBox");
-const usernameInput = document.getElementById("username");
-const startBtn = document.getElementById("startBtn");
-const textDisplay = document.getElementById("textDisplay");
-const typingArea = document.getElementById("typingArea");
-const levelIndicator = document.getElementById("levelIndicator");
-const timerDisplay = document.getElementById("timer");
-const wpmDisplay = document.getElementById("wpm");
-const accuracyDisplay = document.getElementById("accuracy");
-const strengthDisplay = document.getElementById("strength");
-const nextRoundBtn = document.getElementById("nextRoundBtn");
-const userNameDisplay = document.getElementById("userNameDisplay");
-const finalWpm = document.getElementById("finalWpm");
-const finalAccuracy = document.getElementById("finalAccuracy");
-const restartBtn = document.getElementById("restartBtn");
-const canvas = document.getElementById("celebrationCanvas");
-const ctx = canvas.getContext("2d");
-
-// Levels and rounds
-const levels = [
-    { name:"Alphabet", rounds:["a b c d e f g h i j","k l m n o p q r s t","u v w x y z"] },
-    { name:"Words", rounds:["cat dog fish bird","apple banana orange grape","car bus train plane"] },
-    { name:"Sentences", rounds:["Typing is fun.","Practice makes perfect.","Always keep learning new things."] },
-    { name:"Paragraphs", rounds:["This is a paragraph. It contains multiple sentences to practice typing and improve speed and accuracy."] },
-    { name:"Stories", rounds:["Once upon a time, in a land far away, there lived a curious little fox who loved adventures."] }
-];
-
-let currentLevel=0, currentRound=0, totalTyped=0, correctTyped=0, timer, timeLeft=60;
-
-// Resize canvas
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
-
-// Simple balloon effect
-function celebrate() {
-    for(let i=0;i<30;i++){
-        let x=Math.random()*canvas.width;
-        let y=canvas.height+Math.random()*100;
-        let size=5+Math.random()*15;
-        let speed=1+Math.random()*3;
-        ctx.beginPath();
-        ctx.fillStyle=["#FF4C4C","#4CFF91","#4C8CFF","#FFC44C"][Math.floor(Math.random()*4)];
-        ctx.arc(x,y,size,0,2*Math.PI);
-        ctx.fill();
-    }
-    setTimeout(()=>{ctx.clearRect(0,0,canvas.width,canvas.height)},800);
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-startBtn.addEventListener("click",()=>{
-    if(usernameInput.value.trim()==="") return alert("Enter your name!");
-    loginBox.classList.add("hidden");
-    typingBox.classList.remove("hidden");
-    userNameDisplay.textContent=usernameInput.value;
-    loadRound();
-});
-
-function loadRound(){
-    const roundText=levels[currentLevel].rounds[currentRound];
-    textDisplay.innerHTML="";
-    roundText.split("").forEach(char=>{
-        const span=document.createElement("span");
-        span.textContent=char;
-        textDisplay.appendChild(span);
-    });
-    typingArea.value="";
-    typingArea.disabled=false;
-    typingArea.focus();
-    levelIndicator.textContent=`${levels[currentLevel].name} → Round ${currentRound+1}`;
-    nextRoundBtn.classList.add("hidden");
-    timeLeft=60;
-    timerDisplay.textContent=`${timeLeft}s`;
-    totalTyped=0;
-    correctTyped=0;
-    wpmDisplay.textContent=0;
-    accuracyDisplay.textContent="0%";
-    strengthDisplay.textContent="0%";
-    clearInterval(timer);
-    timer=setInterval(updateTimer,1000);
+body {
+  background: linear-gradient(135deg,#f0f4f8,#d9e7ff);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-typingArea.addEventListener("input",()=>{
-    const roundText=levels[currentLevel].rounds[currentRound];
-    const typed=typingArea.value;
-    totalTyped=typed.length;
-    correctTyped=0;
-    const spans=textDisplay.querySelectorAll("span");
-    spans.forEach((span,index)=>{
-        const char=typed[index];
-        if(char==null){span.classList.remove("correct","wrong");}
-        else if(char===span.textContent){span.classList.add("correct"); span.classList.remove("wrong"); correctTyped++;}
-        else{span.classList.add("wrong"); span.classList.remove("correct");}
-    });
-    const wpm=Math.round((correctTyped/5)/((60-timeLeft)/60)||0);
-    const accuracy=totalTyped===0?0:Math.round((correctTyped/totalTyped)*100);
-    wpmDisplay.textContent=wpm;
-    accuracyDisplay.textContent=`${accuracy}%`;
-    strengthDisplay.textContent=Math.round((wpm/60)*100)+'%'; // Example strength bar
-
-    // Auto-finish round
-    if(typed===roundText){
-        clearInterval(timer);
-        typingArea.disabled=true;
-        nextRoundBtn.classList.remove("hidden");
-        celebrate(); // Balloon effect
-    }
-});
-
-function updateTimer(){
-    timeLeft--;
-    timerDisplay.textContent=`${timeLeft}s`;
-    if(timeLeft<=0){
-        clearInterval(timer);
-        typingArea.disabled=true;
-        nextRoundBtn.classList.remove("hidden");
-        celebrate();
-    }
+.container {
+  background: #fff;
+  padding: 28px 35px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 750px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
+  position: relative;
 }
 
-nextRoundBtn.addEventListener("click",()=>{
-    if(currentRound<levels[currentLevel].rounds.length-1){currentRound++;}
-    else if(currentLevel<levels.length-1){currentLevel++; currentRound=0;}
-    else{typingBox.classList.add("hidden"); endBox.classList.remove("hidden");
-         finalWpm.textContent=wpmDisplay.textContent;
-         finalAccuracy.textContent=accuracyDisplay.textContent;
-         return;}
-    loadRound();
-});
+.hidden { display: none; }
 
-restartBtn.addEventListener("click",()=>{
-    currentLevel=0; currentRound=0;
-    endBox.classList.add("hidden");
-    loginBox.classList.remove("hidden");
-});
+input, textarea, button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+textarea {
+  height: 90px;
+  resize: none;
+}
+
+button {
+  background: #4c8cff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3a72e0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.text-display {
+  background: #f2f5fc;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 18px;
+  line-height: 1.8;
+  min-height: 80px;
+}
+
+.correct { color: #2ecc71; }
+.wrong { color: #e74c3c; }
+.current { color: #4c8cff; text-decoration: underline; }
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  margin: 12px 0;
+  font-weight: bold;
+}
+
+/* HAND */
+#handGuide {
+  text-align: center;
+  margin: 10px 0;
+  position: relative;
+}
+
+#handImage {
+  max-width: 350px;
+  opacity: .6;
+}
+
+.finger {
+  width: 22px;
+  height: 22px;
+  background: rgba(76,140,255,.8);
+  border-radius: 50%;
+  position: absolute;
+  opacity: 0;
+}
+
+.finger.active { opacity: 1; }
+
+/* KEYBOARD */
+.keyboard { margin-top: 15px; }
+
+.keyboard .row {
+  display: flex;
+  justify-content: center;
+}
+
+.key {
+  width: 42px;
+  height: 42px;
+  margin: 4px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.key.active {
+  background: #4c8cff;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+#celebrationCanvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}

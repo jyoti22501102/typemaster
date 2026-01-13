@@ -1,40 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TypeMaster | Typing Tutor</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeMaster Pro | Typing Tutor Game</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container" id="loginBox">
-        <h1>TypeMaster</h1>
-        <input type="text" id="username" placeholder="Enter your name" />
-        <button id="startBtn">Start Typing</button>
+<div class="container" id="loginBox">
+    <h1>TypeMaster Pro</h1>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button id="startBtn">Start Typing</button>
+</div>
+
+<div class="container hidden" id="typingBox">
+    <div class="header">
+        <div id="levelIndicator">Level 1 → Round 1</div>
+        <div id="timer">60s</div>
     </div>
 
-    <div class="container hidden" id="typingBox">
-        <div class="header">
-            <div id="levelIndicator">Level 1 → Round 1</div>
-            <div id="timer">60s</div>
-        </div>
-        <div class="text-display" id="textDisplay"></div>
-        <textarea id="typingArea" placeholder="Start typing here..."></textarea>
-        <div class="stats">
-            <div>WPM: <span id="wpm">0</span></div>
-            <div>Accuracy: <span id="accuracy">0%</span></div>
-        </div>
-        <button id="nextRoundBtn" class="hidden">Next Round</button>
+    <!-- Hand Guide -->
+    <div id="handGuide">
+        <img src="assets/hand.png" alt="Hand guide" id="handImage">
+        <div id="fingerHighlight"></div>
     </div>
 
-    <div class="container hidden" id="endBox">
-        <h2>Congratulations, <span id="userNameDisplay"></span>!</h2>
-        <p>Your final stats:</p>
-        <div>WPM: <span id="finalWpm">0</span></div>
-        <div>Accuracy: <span id="finalAccuracy">0%</span></div>
-        <button id="restartBtn">Restart</button>
+    <div class="text-display" id="textDisplay"></div>
+    <textarea id="typingArea" placeholder="Start typing here..."></textarea>
+
+    <div class="stats">
+        <div>WPM: <span id="wpm">0</span></div>
+        <div>Accuracy: <span id="accuracy">0%</span></div>
+        <div>Strength: <span id="strength">0%</span></div>
     </div>
 
-    <script src="script.js"></script>
+    <canvas id="celebrationCanvas"></canvas>
+    <button id="nextRoundBtn" class="hidden">Next Round</button>
+</div>
+
+<div class="container hidden" id="endBox">
+    <h2>Congratulations, <span id="userNameDisplay"></span>!</h2>
+    <p>Your final stats:</p>
+    <div>WPM: <span id="finalWpm">0</span></div>
+    <div>Accuracy: <span id="finalAccuracy">0%</span></div>
+    <button id="restartBtn">Restart</button>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

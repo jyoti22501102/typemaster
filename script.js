@@ -1,66 +1,134 @@
-let time = 60;
-let timer = null;
-let started = false;
+/* ================================
+   TYPING TUTOR – ALL LOGIC HERE
+   Easy to edit | Beginner friendly
+================================ */
 
-const originalText =
-  "Practice typing to improve your speed and accuracy. Keep your eyes on the screen.";
+// -------- LEVEL CONTENT --------
 
-function login() {
-  const name = document.getElementById("username").value.trim();
+// Level 1 – Alphabets (10 rounds)
+const level1 = [
+  "a a a a a",
+  "b b b b b",
+  "c c c c c",
+  "d d d d d",
+  "e e e e e",
+  "f f f f f",
+  "g g g g g",
+  "h h h h h",
+  "i i i i i",
+  "j j j j j"
+];
 
-  if (name === "") {
-    alert("Please enter your name");
-    return;
-  }
+// Level 2 – Words
+const level2 = [
+  "cat dog pen",
+  "apple banana mango",
+  "computer keyboard mouse",
+  "javascript html css",
+  "practice makes perfect",
+  "learn to type fast",
+  "speed and accuracy",
+  "focus on the screen",
+  "keep your hands steady",
+  "typing improves skills"
+];
 
-  localStorage.setItem("typemasterUser", name);
+// Level 3 – Sentences
+const level3 = [
+  "The sun rises in the east.",
+  "Typing is a useful skill.",
+  "Practice every day to improve.",
+  "Accuracy is more important than speed.",
+  "Keep your eyes on the screen.",
+  "Do not look at the keyboard.",
+  "Consistency brings success.",
+  "Technology improves productivity.",
+  "Learning never stops.",
+  "Hard work beats talent."
+];
 
-  document.getElementById("user").innerText = name;
-  document.getElementById("loginBox").classList.add("hidden");
-  document.getElementById("typingBox").classList.remove("hidden");
+// Level 4 – Paragraphs
+const level4 = [
+  "Typing speed is an essential skill in the digital age. Regular practice improves accuracy.",
+  "Technology has changed the way we work and learn. Typing efficiently saves time.",
+  "Discipline and dedication help master any skill. Typing is no exception.",
+  "Focus on accuracy before increasing speed to become a better typist."
+];
+
+// Level 5 – Poems & Stories
+const level5 = [
+  "Twinkle twinkle little star how I wonder what you are.",
+  "Roses are red violets are blue typing is fun and learning too.",
+  "Once upon a time there lived a student who practiced typing daily."
+];
+
+// -------- LEVEL CONTROLLER --------
+
+const levels = [level1, level2, level3, level4, level5];
+
+let currentLevel = 0;
+let currentRound = 0;
+let timeLeft = 45;
+let timer;
+
+// -------- ELEMENTS --------
+
+const textToType = document.getElementById("textToType");
+const typingArea = document.getElementById("typingArea");
+const timeEl = document.getElementById("time");
+const levelInfo = document.getElementById("levelInfo");
+
+// -------- FUNCTIONS --------
+
+function loadRound() {
+  textToType.innerText = levels[currentLevel][currentRound];
+  levelInfo.innerText = `Level ${currentLevel + 1} - Round ${currentRound + 1}`;
+  typingArea.value = "";
+  typingArea.focus();
 }
 
-function startTyping() {
-  if (!started) {
-    started = true;
-    timer = setInterval(updateTime, 1000);
-  }
+function startTimer() {
+  clearInterval(timer);
+  timeLeft = 45;
+  timeEl.innerText = timeLeft;
 
-  const input = document.getElementById("input").value;
-  const wordsTyped = input.trim().split(/\s+/).length;
-  const timeSpent = 60 - time;
+  timer = setInterval(() => {
+    timeLeft--;
+    timeEl.innerText = timeLeft;
 
-  const wpm =
-    timeSpent > 0 ? Math.round((wordsTyped / timeSpent) * 60) : 0;
+    if (timeLeft === 0) {
+      nextRound();
+    }
+  }, 1000);
+}
 
-  document.getElementById("wpm").innerText = wpm;
+function nextRound() {
+  clearInterval(timer);
+  currentRound++;
 
-  let correctChars = 0;
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] === originalText[i]) {
-      correctChars++;
+  if (currentRound >= levels[currentLevel].length) {
+    currentLevel++;
+    currentRound = 0;
+
+    if (currentLevel >= levels.length) {
+      alert("🎉 You completed all levels!");
+      currentLevel = 0;
+    } else {
+      alert("✅ Level Completed!");
     }
   }
 
-  const accuracy =
-    input.length > 0
-      ? Math.round((correctChars / input.length) * 100)
-      : 100;
-
-  document.getElementById("accuracy").innerText = accuracy;
+  loadRound();
+  startTimer();
 }
 
-function updateTime() {
-  time--;
-  document.getElementById("time").innerText = time;
-
-  if (time === 0) {
-    clearInterval(timer);
-    document.getElementById("input").disabled = true;
-    alert("Time up! Test completed.");
-  }
+function restart() {
+  currentLevel = 0;
+  currentRound = 0;
+  loadRound();
+  startTimer();
 }
 
-function resetTest() {
-  location.reload();
-}
+// -------- START APP --------
+loadRound();
+startTimer();
